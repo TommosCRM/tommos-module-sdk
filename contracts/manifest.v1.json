@@ -1,0 +1,141 @@
+{
+  "$id": "https://app.tommos.ai/modules/contracts/manifest.v1.json",
+  "title": "Manifest",
+  "version": 1,
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "manifest_version",
+    "name",
+    "title",
+    "kind",
+    "contract",
+    "entry",
+    "sdk",
+    "schedule",
+    "secrets",
+    "hosts",
+    "time_limit_seconds"
+  ],
+  "properties": {
+    "manifest_version": {
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "about": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000
+    },
+    "kind": {
+      "enum": [
+        "bid",
+        "prospect"
+      ]
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "const": 1
+        }
+      }
+    },
+    "entry": {
+      "type": "string",
+      "pattern": "^find\\.(ts|mjs|js|py)$"
+    },
+    "sdk": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version"
+      ],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "every_minutes"
+      ],
+      "properties": {
+        "every_minutes": {
+          "type": "integer",
+          "minimum": 60,
+          "maximum": 10080
+        }
+      }
+    },
+    "secrets": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^(?!TOMMOS_)[A-Z][A-Z0-9_]{1,63}$"
+          },
+          "about": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        }
+      }
+    },
+    "hosts": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "string",
+        "pattern": "^(?:\\*\\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$",
+        "maxLength": 253
+      }
+    },
+    "time_limit_seconds": {
+      "type": "integer",
+      "minimum": 10,
+      "maximum": 200,
+      "description": "How long one run may take: at most 200 s, so the run, the sandbox and the work after it fit a call of Tommos."
+    },
+    "max_model_calls_per_run": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "The most calls of the tool «ask» one run may make; 0, or left out, when the module asks no model."
+    },
+    "record_sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"
+      }
+    }
+  }
+}

@@ -1,0 +1,177 @@
+{
+  "$id": "https://app.tommos.ai/modules/contracts/bid.v1.json",
+  "title": "Bid",
+  "version": 1,
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "key",
+    "title",
+    "buyer",
+    "source_url",
+    "matched"
+  ],
+  "properties": {
+    "source": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,62}$",
+      "description": "The source the bid comes from, one of the manifest's record_sources."
+    },
+    "key": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "The bid's own id at its source, such as the notice id."
+    },
+    "matched": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 300,
+      "description": "The rule of the module that took this record, as a fact: «CPV 72254, software testing»."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500
+    },
+    "buyer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "type": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        }
+      }
+    },
+    "contact_email": {
+      "type": "string",
+      "format": "email",
+      "maxLength": 320
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "posted_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2000,
+      "description": "The notice on the source's own site."
+    },
+    "summary": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 20000
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100000
+    },
+    "documents": {
+      "type": "array",
+      "maxItems": 100,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "name",
+          "url"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "value_estimate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency"
+      ],
+      "properties": {
+        "low": {
+          "type": "number",
+          "minimum": 0
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      }
+    },
+    "country": {
+      "type": "string",
+      "pattern": "^[A-Z]{2}$",
+      "description": "The country of the buyer, ISO 3166 alpha-2: GB, US."
+    },
+    "naics": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "cpv": {
+      "type": "array",
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 20
+      }
+    },
+    "opp_type": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "place": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "city": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "region": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        }
+      }
+    }
+  }
+}

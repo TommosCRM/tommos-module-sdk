@@ -1,0 +1,19 @@
+{
+  "name": "@tommos/module-sdk",
+  "version": "0.1.0",
+  "description": "The tools of Tommos for a module that finds records: a fetch held to the manifest's hosts, the cursor, the builders of a bid and a prospect, and the check.",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "exports": {
+    ".": { "types": "./src/index.d.ts", "default": "./src/index.js" },
+    "./run": "./src/run.js",
+    "./local-runner": "./src/local-runner.js",
+    "./contracts/*": "./contracts/*"
+  },
+  "bin": { "tommos-module": "./bin/tommos-module.js" },
+  "files": ["src", "bin", "contracts", "python", "README.md"],
+  "engines": { "node": ">=22.6" },
+  "repository": { "type": "git", "url": "git+https://github.com/TommosCRM/tommos-module-sdk.git" }
+}
