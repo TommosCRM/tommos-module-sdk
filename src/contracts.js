@@ -9,6 +9,27 @@ const A_HOST = "^(?:\\*\\.)?[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\\.[a-z0-9](?
 const A_COUNTRY = "^[A-Z]{2}$";
 const text = (max, min = 1) => ({ type: "string", minLength: min, maxLength: max });
 
+// implements MOD-01.1
+// A module names its facts in its manifest: at most six, each with a key, a label and a kind. The kinds are text,
+// money, count and date. A record carries a value for each fact it knows (Yuri, 2026-11-17).
+/** The most facts a manifest names. */
+export const THE_MOST_FACTS_OF_A_MODULE = 6;
+/** The key of a fact: lower case, a letter first, as a record names it. */
+const A_FACT_KEY = "^[a-z][a-z0-9_]{0,39}$";
+/** The kinds of a fact, and the value a record gives for each. */
+export const THE_KINDS_OF_A_FACT = {
+  text: { ...text(300), description: "A text: «Seed»." },
+  money: {
+    type: "object",
+    additionalProperties: false,
+    required: ["amount", "currency"],
+    properties: { amount: { type: "number", minimum: 0 }, currency: { type: "string", pattern: "^[A-Z]{3}$" } },
+    description: "An amount and its currency, ISO 4217: { \"amount\": 2000000, \"currency\": \"USD\" }.",
+  },
+  count: { type: "integer", minimum: 0, description: "A whole number: 12." },
+  date: { type: "string", format: "date", description: "A day, YYYY-MM-DD." },
+};
+
 /** The contract of a bid, version 1: what the door of bids (`bring_in_a_bid`, BID-01.1) reads. */
 export const BID_V1 = {
   $id: "https://app.tommos.ai/modules/contracts/bid.v1.json",
@@ -78,6 +99,10 @@ export const PROSPECT_V1 = {
     },
     segment: text(100),
     score: { type: "number" },
+    facts: {
+      type: "object",
+      description: "The value of each fact the manifest names that the record knows, by the fact's key: a text for text, { amount, currency } for money, a whole number for count, YYYY-MM-DD for date. A key the manifest does not name, or a value of another kind, is refused.",
+    },
     country: { type: "string", pattern: A_COUNTRY },
     people: {
       type: "array",
@@ -119,6 +144,17 @@ export const MANIFEST_V1 = {
     time_limit_seconds: { type: "integer", minimum: 10, maximum: 200, description: "How long one run may take: at most 200 s, so the run, the sandbox and the work after it fit a call of Tommos." },
     max_model_calls_per_run: { type: "integer", minimum: 0, maximum: 100, description: "The most calls of the tool «ask» one run may make; 0, or left out, when the module asks no model." },
     record_sources: { type: "array", minItems: 1, maxItems: 10, items: { type: "string", pattern: A_SOURCE } },
+    facts: {
+      type: "array",
+      maxItems: THE_MOST_FACTS_OF_A_MODULE,
+      description: "The facts a record of this module carries, at most six, in the order a screen shows them: a card shows the first two. A new version keeps the kind of each fact.",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["key", "label", "kind"],
+        properties: { key: { type: "string", pattern: A_FACT_KEY }, label: text(40), kind: { enum: Object.keys(THE_KINDS_OF_A_FACT) } },
+      },
+    },
   },
 };
 

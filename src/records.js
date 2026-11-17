@@ -1,7 +1,7 @@
 // The records a run gives back, judged by Tommos (MOD-01.1 items 5 to 7): each against the contract of its kind, each
 // by its identity (one record per source and key), each bid from a source the manifest names.
 
-import { theContractOf, theIdentityOf } from "./contracts.js";
+import { THE_KINDS_OF_A_FACT, theContractOf, theIdentityOf } from "./contracts.js";
 import { theReasonsItFails } from "./schema.js";
 import { THE_SOURCES_OF_TOMMOS } from "./manifest.js";
 
@@ -72,6 +72,29 @@ export function theOutputOfARun(raw, secrets = []) {
 /** A query parameter whose name says it carries a credential. */
 const A_CREDENTIAL_IN_A_LINK = /[?&](?:api[_-]?key|apikey|key|token|access[_-]?token|auth|secret|password|passwd|signature|sig|x-amz-signature|x-goog-signature)=/i;
 
+// implements MOD-01.1, MOD-02.1
+/**
+ * The facts of a record against the facts its manifest names: a fact the manifest does not name is refused, and so is a
+ * value of the wrong kind. Each reason in words, with the fact's key. Pure.
+ */
+export function theFactsOfARecordFail(manifest, record) {
+  const facts = record && typeof record === "object" ? record.facts : undefined;
+  if (facts === undefined || facts === null || typeof facts !== "object" || Array.isArray(facts)) return [];
+  const named = new Map((manifest.facts ?? []).map((f) => [f.key, f]));
+  const out = [];
+  for (const [key, value] of Object.entries(facts)) {
+    const f = named.get(key);
+    if (!f) {
+      out.push(`facts.${key} is not a fact the manifest names (${named.size ? `it names ${[...named.keys()].join(", ")}` : "it names none"})`);
+      continue;
+    }
+    if (value === null || value === undefined) continue;
+    const reasons = theReasonsItFails(THE_KINDS_OF_A_FACT[f.kind], value, `facts.${key}`);
+    if (reasons.length) out.push(`facts.${key} is not a value of the kind ${f.kind}: ${reasons.join("; ")}`);
+  }
+  return out;
+}
+
 export function theRecordsJudged(manifest, records, o = {}) {
   const secrets = (o.secrets ?? []).filter((s) => typeof s === "string" && s.length >= 4);
   const contract = theContractOf(manifest.kind, manifest.contract.version);
@@ -83,6 +106,8 @@ export function theRecordsJudged(manifest, records, o = {}) {
     const reasons = contract ? theReasonsItFails(contract, record) : [`Tommos holds no contract ${manifest.kind} v${manifest.contract.version}`];
     if (manifest.kind === "bid" && record && typeof record.source === "string" && !sources.includes(record.source)) reasons.push(`source «${record.source}» is not one of the manifest's record_sources (${sources.join(", ")})`);
     if (manifest.kind === "bid" && record && THE_SOURCES_OF_TOMMOS.includes(record.source)) reasons.push(`source «${record.source}» is a source of Tommos itself`);
+    // implements MOD-02.1
+    reasons.push(...theFactsOfARecordFail(manifest, record));
     // implements MOD-02.2
     // A record carries no secret: neither the value of one of the source's secrets, nor a link with a credential in it.
     const text = JSON.stringify(record ?? null);

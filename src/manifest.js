@@ -39,6 +39,24 @@ export function readTheManifest(raw) {
   for (const s of [...(m.record_sources ?? []), m.name]) if (THE_SOURCES_OF_TOMMOS.includes(s)) reasons.push(`manifest: «${s}» is a source of Tommos itself; a module writes only under a source of its own`);
   const names = (m.secrets ?? []).map((s) => s?.name);
   if (new Set(names).size !== names.length) reasons.push("manifest: a secret is named twice");
+  // implements MOD-01.1
+  // Each fact is named once; a record of a bid has no place for facts (the contract of a bid carries none).
+  const keys = (m.facts ?? []).map((f) => f?.key);
+  for (const k of new Set(keys.filter((k, i) => keys.indexOf(k) !== i))) reasons.push(`manifest: the fact «${k}» is named twice`);
+  if (m.kind === "bid" && m.facts?.length) reasons.push("manifest: a bid module names no facts; the contract of a bid carries none");
   if (reasons.length) return { ok: false, reasons };
   return { ok: true, manifest: { ...m, record_sources: m.record_sources ?? [m.name] } };
+}
+
+// implements MOD-02.1
+/**
+ * A new version keeps the kind of each fact the version that ran named: a fact whose kind changes is refused, in words.
+ * A fact may be added or left out; its key, once named, keeps its kind. `before` is the manifest of the version that
+ * ran (null for a new module). Pure.
+ */
+export function theFactsKeepTheirKinds(before, after) {
+  const was = new Map((before?.facts ?? []).map((f) => [f.key, f.kind]));
+  return (after?.facts ?? [])
+    .filter((f) => was.has(f.key) && was.get(f.key) !== f.kind)
+    .map((f) => `manifest: the fact «${f.key}» is ${was.get(f.key)} in the version that runs, and ${f.kind} in this one. A fact keeps its kind; name a new fact for the new kind`);
 }

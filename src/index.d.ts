@@ -48,9 +48,22 @@ export interface Prospect {
   evidence: Evidence[];
   segment?: string;
   score?: number;
+  /** The value of each fact the manifest names that the record knows, by the fact's key. */
+  facts?: Record<string, AFactsValue>;
   country?: string;
   people?: { name: string; title?: string; email?: string; url?: string }[];
 }
+
+/** The kinds of a fact (MOD-01.1): text, money, count, date. */
+export type AKindOfAFact = "text" | "money" | "count" | "date";
+/** A fact a module names in its manifest: its key, the label a screen shows, its kind. */
+export interface AFactOfAModule {
+  key: string;
+  label: string;
+  kind: AKindOfAFact;
+}
+/** A fact's value by its kind: a text; { amount, currency } for money; a whole number for count; YYYY-MM-DD for date. */
+export type AFactsValue = string | number | { amount: number; currency: string };
 
 export interface Manifest {
   manifest_version: 1;
@@ -67,6 +80,8 @@ export interface Manifest {
   time_limit_seconds: number;
   max_model_calls_per_run?: number;
   record_sources: string[];
+  /** At most six, in the order a screen shows them. */
+  facts?: AFactOfAModule[];
 }
 
 export declare class ContractError extends Error {
@@ -113,6 +128,12 @@ export declare const BID_V1: Schema;
 export declare const PROSPECT_V1: Schema;
 export declare const MANIFEST_V1: Schema;
 export declare const CONTRACTS: Record<string, Record<number, Schema>>;
+export declare const THE_KINDS_OF_A_FACT: Record<AKindOfAFact, Schema>;
+export declare const THE_MOST_FACTS_OF_A_MODULE: number;
+/** The reasons a new version changes the kind of a fact the version that runs names; empty when each keeps its kind. */
+export declare function theFactsKeepTheirKinds(before: Pick<Manifest, "facts"> | null | undefined, after: Pick<Manifest, "facts">): string[];
+/** The reasons the facts of a record fail the facts its manifest names: a fact not named, a value of the wrong kind. */
+export declare function theFactsOfARecordFail(manifest: Pick<Manifest, "facts">, record: unknown): string[];
 export declare function theContractOf(kind: string, version: number): Schema | null;
 export declare function theIdentityOf(kind: string, record: unknown, moduleName: string): { source: string; key: string } | null;
 export declare function theReasonsItFails(schema: Schema, value: unknown, path?: string): string[];
@@ -150,6 +171,8 @@ export interface CheckOptions {
   versions?: string[];
   oldest?: string;
   toolHashes?: Set<string>;
+  /** The manifest of the version that runs, for a new version: each fact keeps its kind. */
+  before?: Pick<Manifest, "facts"> | null;
 }
 export declare function checkAPackage(files: PackageFiles, run: ARunner, o?: CheckOptions): Promise<ACheck>;
 export declare const THE_CHECKS: { a: string; b: string; c: string; d: string; e: string; f: string; g: string; h: string; i: string; j: string; k: string; examples: string };

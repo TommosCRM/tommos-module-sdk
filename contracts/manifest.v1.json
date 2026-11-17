@@ -136,6 +136,39 @@
         "type": "string",
         "pattern": "^[a-z0-9][a-z0-9-]{1,62}$"
       }
+    },
+    "facts": {
+      "type": "array",
+      "maxItems": 6,
+      "description": "The facts a record of this module carries, at most six, in the order a screen shows them: a card shows the first two. A new version keeps the kind of each fact.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "key",
+          "label",
+          "kind"
+        ],
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9_]{0,39}$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40
+          },
+          "kind": {
+            "enum": [
+              "text",
+              "money",
+              "count",
+              "date"
+            ]
+          }
+        }
+      }
     }
   }
 }

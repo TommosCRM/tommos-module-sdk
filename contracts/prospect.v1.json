@@ -70,6 +70,10 @@
     "score": {
       "type": "number"
     },
+    "facts": {
+      "type": "object",
+      "description": "The value of each fact the manifest names that the record knows, by the fact's key: a text for text, { amount, currency } for money, a whole number for count, YYYY-MM-DD for date. A key the manifest does not name, or a value of another kind, is refused."
+    },
     "country": {
       "type": "string",
       "pattern": "^[A-Z]{2}$"

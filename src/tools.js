@@ -8,7 +8,7 @@ import { dirname, join } from "node:path";
 import { BID_V1, PROSPECT_V1 } from "./contracts.js";
 import { theReasonsItFails } from "./schema.js";
 
-export const VERSION = "0.1.0";
+export const VERSION = "0.2.0";
 
 // ---------------------------------------------------------------- the log of the run (MOD-02.2 items 4, 7)
 

@@ -9,7 +9,7 @@
 //   h. no host the manifest does not name   i. no value of a secret in the output or the log
 
 import { createHash } from "node:crypto";
-import { readTheManifest } from "./manifest.js";
+import { readTheManifest, theFactsKeepTheirKinds } from "./manifest.js";
 import { theOutputOfARun, theRecordsJudged } from "./records.js";
 
 /** A package is a map of its files: a path inside the package (with «/») and its text. */
@@ -150,7 +150,8 @@ export function theSecretsOfTheCheck(manifest) {
  * how long it ran) or `{ ok: false, error, ms }`; it is called with `{ files, manifest, entry, example, context,
  * secrets }`. Options: `entry` checks another entry than the manifest's (the reference module has a find.ts and a
  * find.py); `strict` refuses on g, h and i (Tommos), else they warn (a laptop); `versions`, `oldest` and `toolHashes`
- * are the versions of the tools Tommos holds and the hashes of their files (check c).
+ * are the versions of the tools Tommos holds and the hashes of their files (check c); `before` is the manifest of the
+ * version that runs, for a new version (each fact keeps its kind).
  */
 export async function checkAPackage(files, run, o = {}) {
   const out = { ok: false, manifest: null, reasons: [], warnings: [], examples: [], failed: [] };
@@ -170,6 +171,10 @@ export async function checkAPackage(files, run, o = {}) {
   }
   const manifest = o.entry ? { ...read.manifest, entry: o.entry } : read.manifest;
   out.manifest = read.manifest;
+  // implements MOD-02.1
+  // A new version keeps the kind of each fact the version that runs names (`before`, its manifest).
+  if (o.before) for (const r of theFactsKeepTheirKinds(o.before, manifest)) fail("a", r);
+  if (out.reasons.length) return out;
   // b. The function «find» is there, with its signature.
   if (!files[manifest.entry]) fail("b", `The manifest names the entry ${manifest.entry}, and the package does not hold it`);
   else for (const r of theFunctionFindIsThere(files, manifest.entry)) fail("b", r);
