@@ -5,7 +5,8 @@ import { theReasonsItFails } from "./schema.js";
 
 /** The sources a module may never name: the doors Tommos keeps itself (MOD-01.1: a module writes only under its own
  *  source). A record of one of them would stand as that door's. */
-export const THE_SOURCES_OF_TOMMOS = ["highergov"];
+// «by-hand» is the source of a bid a person makes on the board «Bids» (BID-01.1 item 14): no module writes under it.
+export const THE_SOURCES_OF_TOMMOS = ["highergov", "by-hand"];
 
 /** The manifest as Tommos takes it, or the reasons it is refused, in words. A bid module names the sources its records
  *  come from (`record_sources`); a prospect module's records come from the module itself. */

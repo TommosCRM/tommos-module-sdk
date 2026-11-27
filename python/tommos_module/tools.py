@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 from .contracts import BID_V1, PROSPECT_V1
 from .schema import reasons_it_fails
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 # ---------------------------------------------------------------- the log of the run (MOD-02.2 items 4, 7)
 THE_MOST_LINES_OF_A_RUN = 500

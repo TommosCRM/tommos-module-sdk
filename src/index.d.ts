@@ -19,7 +19,9 @@ export interface Bid {
   /** The rule of the module that took this record, as a fact. */
   matched: string;
   title: string;
-  buyer: { name: string; key?: string; type?: string };
+  /** `email`: the buyer's email as the notice states it (OCDS: the buyer party's contactPoint.email). It may name a person;
+   *  Tommos uses only its domain, and makes no contact of it. */
+  buyer: { name: string; key?: string; type?: string; email?: string };
   contact_email?: string;
   due_date?: string;
   posted_date?: string;

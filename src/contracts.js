@@ -47,7 +47,17 @@ export const BID_V1 = {
       type: "object",
       additionalProperties: false,
       required: ["name"],
-      properties: { name: text(300), key: text(200), type: text(100) },
+      properties: {
+        name: text(300),
+        key: text(200),
+        type: text(100),
+        email: {
+          type: "string",
+          format: "email",
+          maxLength: 320,
+          description: "The buyer's email as the notice states it (OCDS: the buyer party's contactPoint.email). It may name a person, an official of the buyer. Tommos uses only its domain, as the buyer's site when the domain names the buyer: it makes no contact, no lead and no addressee of a letter, and no screen shows it. A person to write to is contact_email.",
+        },
+      },
     },
     contact_email: { type: "string", format: "email", maxLength: 320 },
     due_date: { type: "string", format: "date" },

@@ -1,6 +1,6 @@
 {
   "name": "@tommos/module-sdk",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The tools of Tommos for a module that finds records: a fetch held to the manifest's hosts, the cursor, the builders of a bid and a prospect, and the check.",
   "license": "MIT",
   "type": "module",
